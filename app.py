@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-import sqlite3
 import os
+import psycopg2
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -10,20 +10,22 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Simulated in-memory token-role map (for demo)
-TOKENS = {}  # token -> role
-
+# PostgreSQL connection
 def get_db_connection():
-    conn = sqlite3.connect('gym_products.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+    return psycopg2.connect(
+        host=os.environ['DB_HOST'],
+        dbname=os.environ['DB_NAME'],
+        user=os.environ['DB_USER'],
+        password=os.environ['DB_PASSWORD'],
+        port=os.environ.get("DB_PORT", 5432)
+    )
 
 def create_tables():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             username TEXT UNIQUE,
             password TEXT,
             role TEXT
@@ -31,22 +33,24 @@ def create_tables():
     ''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             name TEXT,
             description TEXT,
-            price REAL,
+            price NUMERIC,
             category TEXT,
             image_url TEXT
         )
     ''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS categories (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             name TEXT UNIQUE
         )
     ''')
     conn.commit()
     conn.close()
+
+TOKENS = {}
 
 @app.route('/')
 def home():
@@ -57,34 +61,31 @@ def register():
     data = request.get_json()
     username = data['username']
     password = data['password']
-    role = 'admin' if username == 'admin' else 'user'  # simple logic
-
+    role = 'admin' if username == 'admin' else 'user'
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", (username, password, role))
+        cursor.execute("INSERT INTO users (username, password, role) VALUES (%s, %s, %s)", (username, password, role))
         conn.commit()
-    except sqlite3.IntegrityError:
+    except:
         return jsonify({"message": "Username already exists"}), 400
     conn.close()
-    return jsonify({"message": "User registered successfully", "role": role})
+    return jsonify({"message": "Registered", "role": role})
 
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data['username']
     password = data['password']
-
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+    cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
     user = cursor.fetchone()
     conn.close()
-
     if user:
         token = f"token-{username}"
-        TOKENS[token] = user['role']
-        return jsonify({"access_token": token, "role": user['role']})
+        TOKENS[token] = 'admin' if username == 'admin' else 'user'
+        return jsonify({"access_token": token, "role": TOKENS[token]})
     return jsonify({"message": "Invalid credentials"}), 401
 
 def verify_admin_token():
@@ -98,45 +99,42 @@ def verify_admin_token():
 def add_product():
     if not verify_admin_token():
         return jsonify({"message": "Unauthorized"}), 403
-
     name = request.form['name']
     description = request.form['description']
     price = request.form['price']
     category = request.form['category']
     file = request.files['image']
-
     filename = secure_filename(file.filename)
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
-
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
         INSERT INTO products (name, description, price, category, image_url)
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s)
     ''', (name, description, float(price), category, filepath))
     conn.commit()
     conn.close()
-
-    return jsonify({"message": "Product added successfully!"})
+    return jsonify({"message": "Product added successfully"})
 
 @app.route('/products', methods=['GET'])
 def get_products():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM products")
-    products = cursor.fetchall()
+    rows = cursor.fetchall()
     conn.close()
-    return jsonify([dict(row) for row in products])
+    keys = ['id', 'name', 'description', 'price', 'category', 'image_url']
+    return jsonify([dict(zip(keys, row)) for row in rows])
 
 @app.route('/categories', methods=['GET'])
 def get_categories():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM categories")
-    categories = cursor.fetchall()
+    rows = cursor.fetchall()
     conn.close()
-    return jsonify([dict(row) for row in categories])
+    return jsonify([{"id": row[0], "name": row[1]} for row in rows])
 
 @app.route('/categories', methods=['POST'])
 def add_category():
@@ -148,9 +146,9 @@ def add_category():
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO categories (name) VALUES (?)", (name,))
+        cursor.execute("INSERT INTO categories (name) VALUES (%s)", (name,))
         conn.commit()
-    except sqlite3.IntegrityError:
+    except:
         return jsonify({"message": "Category already exists"}), 400
     conn.close()
     return jsonify({"message": "Category added successfully"})
@@ -161,7 +159,7 @@ def delete_category(cat_id):
         return jsonify({"message": "Unauthorized"}), 403
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM categories WHERE id = ?", (cat_id,))
+    cursor.execute("DELETE FROM categories WHERE id = %s", (cat_id,))
     conn.commit()
     conn.close()
     return jsonify({"message": "Category deleted"})
@@ -169,4 +167,4 @@ def delete_category(cat_id):
 if __name__ == '__main__':
     create_tables()
     port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host="0.0.0.0", port=port)
