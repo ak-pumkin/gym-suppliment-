@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gym Supplements Store</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #121212;
+      color: #fff;
+    }
+    header, main {
+      max-width: 800px;
+      margin: auto;
+    }
+    header h1 {
+      color: #00ffcc;
+    }
+    nav button {
+      background: #00ffcc;
+      border: none;
+      padding: 10px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .product {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+    img {
+      border-radius: 5px;
+    }
+    form input, form select, form textarea, form button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+    }
+    form button {
+      background: #00ffcc;
+      color: #000;
+      font-weight: bold;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      header h1 {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Gym Supplements</h1>
+    <nav>
+      <button onclick="login()">Login</button>
+      <button onclick="register()">Register</button>
+    </nav>
+  </header>
+  <main>
+    <h2>Filter by Category</h2>
+    <select id="categoryFilter">
+      <option value="">All</option>
+    </select>
+
+    <h2>Our Products</h2>
+    <div id="products"></div>
+
+    <div id="addProductSection" style="display: none;">
+      <h2>Add a Product (Admin Only)</h2>
+      <form id="addProductForm" enctype="multipart/form-data">
+        <input type="text" name="name" placeholder="Product Name" required>
+        <textarea name="description" placeholder="Description" required></textarea>
+        <input type="number" name="price" placeholder="Price" step="0.01" required>
+        <select name="category" required>
+          <option value="">Select Category</option>
+          <option value="Protein">Protein</option>
+          <option value="Creatine">Creatine</option>
+          <option value="Vitamins">Vitamins</option>
+        </select>
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Add Product</button>
+      </form>
+    </div>
+
+    <div id="manageCategories" style="display:none;">
+      <h2>Manage Categories (Admin)</h2>
+      <p>(Placeholder UI - backend required)</p>
+      <input type="text" id="newCategory" placeholder="New Category">
+      <button onclick="alert('Add category endpoint not implemented')">Add Category</button>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
