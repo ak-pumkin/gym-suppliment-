@@ -1,7 +1,7 @@
 
 async function fetchProducts() {
   try {
-    const res = await fetch("http://localhost:5000/products");
+    const res = await fetch("http://localhost:10000/products");
     const products = await res.json();
     const container = document.getElementById("products");
     const filterValue = document.getElementById("categoryFilter").value;
