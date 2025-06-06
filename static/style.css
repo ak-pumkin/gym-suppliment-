@@ -1,119 +1,174 @@
-
-/* General Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
 body {
-  background-color: #111827;
-  color: #f9fafb;
+  font-family: Arial, sans-serif;
+  margin: 0;
   padding: 20px;
+  background-color: #1f2937;
+  color: #f3f4f6;
 }
 
 header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-header h1 {
-  color: #10b981;
-  font-size: 2rem;
-}
-
-nav button {
-  background-color: #10b981;
-  color: #111827;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-left: 10px;
-}
-
-main {
-  max-width: 900px;
-  margin: auto;
-}
-
-h2 {
-  font-size: 1.5rem;
+  background-color: #111827;
   color: #facc15;
+  padding: 20px;
+  text-align: center;
+}
+
+h1, h2 {
   margin-bottom: 10px;
 }
 
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+nav button {
+  padding: 10px 16px;
+  background-color: #10b981;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+nav button:hover {
+  background-color: #059669;
+}
+
+#products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
 .product {
-  background-color: #1f2937;
+  background-color: #374151;
   padding: 15px;
-  margin-bottom: 15px;
   border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  text-align: center;
 }
 
 .product img {
-  max-width: 100px;
+  max-width: 100%;
+  height: auto;
   border-radius: 6px;
   margin-top: 10px;
 }
 
 form {
-  margin-top: 30px;
   background-color: #1f2937;
   padding: 20px;
-  border-radius: 10px;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  max-width: 600px;
+  color: #f3f4f6;
 }
 
-form input,
-form textarea,
-form select,
-form button {
+form input, form select, form textarea {
   display: block;
   width: 100%;
+  padding: 8px 12px;
   margin-bottom: 12px;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-}
-
-form input, form textarea, form select {
-  background-color: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  background-color: #111827;
   color: #f9fafb;
 }
 
-form button {
-  background-color: #10b981;
-  color: #111827;
+form label {
+  margin-top: 8px;
   font-weight: bold;
+  color: #d1d5db;
+}
+
+.message {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #d1fae5;
+  border: 1px solid #10b981;
+  border-radius: 4px;
+  color: #065f46;
+}
+
+#manageCategories {
+  margin-top: 30px;
+  background-color: #1f2937;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px;
+}
+
+#manageCategories div {
+  margin-top: 10px;
+  background-color: #374151;
+  padding: 10px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#manageCategories button {
+  background-color: #ef4444;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: white;
   cursor: pointer;
 }
 
-select,
-#categoryFilter {
-  background-color: #374151;
-  color: white;
-  border: none;
-  padding: 8px;
-  border-radius: 6px;
-  margin-bottom: 15px;
+#manageCategories button:hover {
+  background-color: #dc2626;
 }
 
 /* Responsive */
 @media (max-width: 600px) {
-  header, main {
-    flex-direction: column;
-    align-items: center;
-  }
-
   nav {
-    margin-top: 10px;
+    flex-direction: column;
+    align-items: flex-start;
   }
+  nav button {
+    margin: 5px 0;
+  }
+}
 
-  .product {
-    padding: 10px;
-  }
+/* Login Status Text Style */
+#loginStatus.admin {
+  font-weight: bold;
+  color: #22c55e; /* green for admin */
+  margin-right: 10px;
+  display: inline-block;
+}
+
+#loginStatus.user {
+  font-weight: bold;
+  color: #3b82f6; /* blue for regular user */
+  margin-right: 10px;
+  display: inline-block;
+}
+
+/* Toast/Alert System */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #1e293b;
+  color: #f3f4f6;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.toast.show {
+  opacity: 1;
 }

@@ -50,11 +50,34 @@ def create_tables():
     conn.commit()
     conn.close()
 
+
+@app.route('/migrate-users', methods=['GET'])
+def migrate_users():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN email TEXT;")
+        cursor.execute("ALTER TABLE users ADD COLUMN phone TEXT;")
+        cursor.execute("ALTER TABLE users ADD COLUMN full_name TEXT;")
+        cursor.execute("ALTER TABLE users ADD COLUMN age INTEGER;")
+        cursor.execute("ALTER TABLE users ADD COLUMN gender TEXT;")
+        conn.commit()
+    except Exception as e:
+        return jsonify({"message": "Migration failed: " + str(e)})
+    return jsonify({"message": "Migration successful"})
+
 TOKENS = {}
 
 @app.route('/')
 def home():
     return render_template("index.html")
+@app.route('/login')
+def login_page():
+    return render_template("login.html")
+
+@app.route('/register')
+def register_page():
+    return render_template("register.html")
 
 @app.route('/api/register', methods=['POST'])
 def register():
