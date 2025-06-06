@@ -61,12 +61,15 @@
 </head>
 <body>
   <header>
-    <h1>Gym Supplements</h1>
-    <nav>
-      <button onclick="login()">Login</button>
-      <button onclick="register()">Register</button>
-    </nav>
-  </header>
+  <h1>Gym Supplements</h1>
+  <nav>
+    <span id="loginStatus">Not logged in</span>
+    <button id="loginBtn" onclick="window.location.href='/login'">Login</button>
+    <button id="registerBtn" onclick="window.location.href='/register'">Register</button>
+    <button id="logoutBtn" onclick="logout()" style="display: none;">Logout</button>
+  </nav>
+</header>
+
   <main>
     <h2>Filter by Category</h2>
     <select id="categoryFilter">
@@ -101,5 +104,37 @@
     </div>
   </main>
   <script src="/static/app.js"></script>
+  <script>
+  function showToast(message, duration = 3000) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, duration);
+  }
+
+  function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    showToast("Logged out");
+    location.reload();
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const role = localStorage.getItem("role");
+    const token = localStorage.getItem("token");
+    const loginStatus = document.getElementById("loginStatus");
+
+    if (token && role) {
+      loginStatus.textContent = `Logged in as ${role}`;
+      loginStatus.className = role; // apply 'admin' or 'user' class
+      document.getElementById("logoutBtn").style.display = "inline-block";
+      document.getElementById("loginBtn").style.display = "none";
+      document.getElementById("registerBtn").style.display = "none";
+    }
+  });
+ </script>
+
 </body>
 </html>
