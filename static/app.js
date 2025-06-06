@@ -1,7 +1,7 @@
 
 async function fetchProducts() {
   try {
-    const res = await fetch("http://localhost:10000/products");
+    const res = await fetch("https://gym-suppliments.onrender.com/products");
     const products = await res.json();
     const container = document.getElementById("products");
     const filterValue = document.getElementById("categoryFilter").value;
@@ -35,7 +35,7 @@ async function fetchProducts() {
         div.innerHTML = `
           <h4>${p.name}</h4>
           <p>$${p.price}</p>
-          ${p.image_url ? `<img src="http://localhost:5000/${p.image_url}" width="100"/>` : ''}
+          ${p.image_url ? `<img src="https://gym-suppliments.onrender.com/${p.image_url}" width="100"/>` : ''}
         `;
         section.appendChild(div);
       });
@@ -51,7 +51,7 @@ async function fetchAndDisplayCategories() {
   if (!token) return;
 
   try {
-    const res = await fetch("http://localhost:5000/categories", {
+    const res = await fetch("https://gym-suppliments.onrender.com/categories", {
       headers: { Authorization: `Bearer ${token}` }
     });
     const categories = await res.json();
@@ -75,7 +75,7 @@ function addCategory() {
   const token = localStorage.getItem("token");
   if (!name || !token) return;
 
-  fetch("http://localhost:5000/categories", {
+  fetch("https://gym-suppliments.onrender.com/categories", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -95,7 +95,7 @@ function deleteCategory(id) {
   const token = localStorage.getItem("token");
   if (!token) return;
 
-  fetch(`http://localhost:5000/categories/${id}`, {
+  fetch(`https://gym-suppliments.onrender.com/categories/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`
@@ -112,7 +112,7 @@ function deleteCategory(id) {
 function login() {
   const username = prompt("Username:");
   const password = prompt("Password:");
-  fetch("http://localhost:5000/api/login", {
+  fetch("https://gym-suppliments.onrender.com/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
@@ -138,7 +138,7 @@ function login() {
 function register() {
   const username = prompt("Username:");
   const password = prompt("Password:");
-  fetch("http://localhost:5000/api/register", {
+  fetch("https://gym-suppliments.onrender.com/api/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
@@ -160,7 +160,7 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
   }
 
   try {
-    const res = await fetch("http://localhost:5000/add-product", {
+    const res = await fetch("https://gym-suppliments.onrender.com/add-product", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`
