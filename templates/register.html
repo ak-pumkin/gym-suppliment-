@@ -27,36 +27,27 @@
     <p>Already have an account? <a href="/login">Login here</a></p>
   </main>
 
-  <script>
-    document.getElementById("registerForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const form = e.target;
-      const data = {
-        username: form.username.value,
-        email: form.email.value,
-        phone: form.phone.value,
-        full_name: form.full_name.value,
-        age: form.age.value,
-        gender: form.gender.value,
-        password: form.password.value,
-        confirmPassword: form.confirmPassword.value
-      };
+ <script>
+  document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-      if (data.password !== data.confirmPassword) {
-        alert("Passwords do not match.");
-        return;
-      }
-
-      const res = await fetch("/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      const result = await res.json();
-      alert(result.message || "Error registering.");
-      if (res.ok) window.location.href = "/login";
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
     });
-  </script>
+
+    const data = await res.json();
+    if (res.ok) {
+      localStorage.setItem("role", data.role);
+      alert(`Registered as ${data.role}`);
+      window.location.href = "/login";
+    } else {
+      document.getElementById("message").innerText = data.message || "Registration failed";
+    }
+  });
+ </script>
 </body>
 </html>

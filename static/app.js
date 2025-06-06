@@ -85,7 +85,7 @@ function addCategory() {
   })
     .then(res => res.json())
     .then(data => {
-      showToast(data.message);
+      alert(data.message);
       fetchAndDisplayCategories();
     })
     .catch(err => console.error("Error adding category", err));
@@ -103,7 +103,7 @@ function deleteCategory(id) {
   })
     .then(res => res.json())
     .then(data => {
-      showToast(data.message);
+      alert(data.message);
       fetchAndDisplayCategories();
     })
     .catch(err => console.error("Error deleting category", err));
@@ -122,17 +122,17 @@ function login() {
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("role", data.role);
-        showToast(`Logged in as ${data.role}`);
-          if (data.role === 'admin') {
+        alert(`Logged in as ${data.role}`);
+        if (data.role === 'admin') {
           document.getElementById("addProductSection").style.display = "block";
           document.getElementById("manageCategories").style.display = "block";
           fetchAndDisplayCategories();
         }
       } else {
-        showToast("Login failed");
+        alert("Login failed");
       }
     })
-    .catch(err => showToast("Error logging in"));
+    .catch(err => alert("Error logging in"));
 }
 
 function register() {
@@ -144,8 +144,8 @@ function register() {
     body: JSON.stringify({ username, password })
   })
     .then(res => res.json())
-    .then(data => showToast(data.message || "Error"))
-    .catch(err => showToast("Error registering"));
+    .then(data => alert(data.message || "Error"))
+    .catch(err => alert("Error registering"));
 }
 
 document.getElementById("addProductForm").addEventListener("submit", async function (e) {
@@ -155,7 +155,7 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
 
   const token = localStorage.getItem("token");
   if (!token) {
-    showToast("Unauthorized");
+    alert("Unauthorized");
     return;
   }
 
@@ -168,11 +168,11 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
       body: formData
     });
     const data = await res.json();
-    showToast(data.message);
+    alert(data.message);
     fetchProducts();
     form.reset();
   } catch (err) {
-    showToast("Error adding product");
+    alert("Error adding product");
     console.error(err);
   }
 });
