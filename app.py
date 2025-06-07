@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os
 import psycopg2
@@ -66,13 +66,15 @@ TOKENS = {}
 def home():
     return render_template("index.html")
 
-@app.route('/api/login', methods=["POST"])
+# ✅ These render pages
+@app.route("/login")
 def login_page():
     return render_template("login.html")
 
-@app.route("/api/register", methods=["POST"])
+@app.route("/register")
 def register_page():
     return render_template("register.html")
+
 
 @app.route('/api/register', methods=['POST'])
 def register():
