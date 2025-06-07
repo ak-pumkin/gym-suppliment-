@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gym Supplements</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Gym Supplements</h1>
+    <nav>
+      <span id="loginStatus">Not logged in</span>
+      <button id="loginBtn" onclick="login()">Login</button>
+      <button id="registerBtn" onclick="register()">Register</button>
+      <button id="logoutBtn" onclick="logout()" style="display: none;">Logout</button>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Filter by Category</h2>
+    <select id="categoryFilter">
+      <option value="">All</option>
+    </select>
+
+    <h2>Our Products</h2>
+    <div id="products"></div>
+
+    <div id="addProductSection" style="display: none;">
+      <h2>Add a Product (Admin Only)</h2>
+      <form id="addProductForm" enctype="multipart/form-data">
+        <input type="text" name="name" placeholder="Product Name" required />
+        <textarea name="description" placeholder="Description" required></textarea>
+        <input type="number" name="price" placeholder="Price" step="0.01" required />
+        <select name="category" id="addProductCategory" required>
+          <option value="">Select Category</option>
+        </select>
+        <input type="file" name="image" accept="image/*" required />
+        <button type="submit">Add Product</button>
+      </form>
+    </div>
+
+    <div id="manageCategories" style="display: none;">
+      <h2>Manage Categories (Admin)</h2>
+      <input type="text" id="newCategory" placeholder="New Category" />
+      <button onclick="addCategory()">Add Category</button>
+      <div id="categoryList"></div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/static/app.js"></script>
+  <script>
+    function logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      showToast("Logged out");
+      location.reload();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const role = localStorage.getItem("role");
+      const token = localStorage.getItem("token");
+
+      if (token && role) {
+        document.getElementById("loginStatus").textContent = `Logged in as ${role}`;
+        document.getElementById("loginBtn").style.display = "none";
+        document.getElementById("registerBtn").style.display = "none";
+        document.getElementById("logoutBtn").style.display = "inline-block";
+
+        if (role === "admin") {
+          document.getElementById("addProductSection").style.display = "block";
+          document.getElementById("manageCategories").style.display = "block";
+          fetchAndDisplayCategories();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
