@@ -1,74 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Gym Supplements Store</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #121212;
-      color: #fff;
-    }
-    header, main {
-      max-width: 800px;
-      margin: auto;
-    }
-    header h1 {
-      color: #00ffcc;
-    }
-    nav button {
-      background: #00ffcc;
-      border: none;
-      padding: 10px;
-      margin: 5px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    .product {
-      background: #1e1e1e;
-      border: 1px solid #333;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-    }
-    img {
-      border-radius: 5px;
-    }
-    form input, form select, form textarea, form button {
-      display: block;
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-    }
-    form button {
-      background: #00ffcc;
-      color: #000;
-      font-weight: bold;
-    }
-    @media (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
-      header h1 {
-        font-size: 1.5em;
-      }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Gym Supplements</title>
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <header>
-  <h1>Gym Supplements</h1>
-  <nav>
-    <span id="loginStatus">Not logged in</span>
-    <button id="loginBtn" onclick="window.location.href='/login'">Login</button>
-    <button id="registerBtn" onclick="window.location.href='/register'">Register</button>
-    <button id="logoutBtn" onclick="logout()" style="display: none;">Logout</button>
-  </nav>
-</header>
+    <h1>Gym Supplements</h1>
+    <nav>
+      <span id="loginStatus">Not logged in</span>
+      <button id="loginBtn" onclick="login()">Login</button>
+      <button id="registerBtn" onclick="register()">Register</button>
+      <button id="logoutBtn" onclick="logout()" style="display: none;">Logout</button>
+    </nav>
+  </header>
 
   <main>
     <h2>Filter by Category</h2>
@@ -82,59 +28,54 @@
     <div id="addProductSection" style="display: none;">
       <h2>Add a Product (Admin Only)</h2>
       <form id="addProductForm" enctype="multipart/form-data">
-        <input type="text" name="name" placeholder="Product Name" required>
+        <input type="text" name="name" placeholder="Product Name" required />
         <textarea name="description" placeholder="Description" required></textarea>
-        <input type="number" name="price" placeholder="Price" step="0.01" required>
-        <select name="category" required>
+        <input type="number" name="price" placeholder="Price" step="0.01" required />
+        <select name="category" id="addProductCategory" required>
           <option value="">Select Category</option>
-          <option value="Protein">Protein</option>
-          <option value="Creatine">Creatine</option>
-          <option value="Vitamins">Vitamins</option>
         </select>
-        <input type="file" name="image" accept="image/*" required>
+        <input type="file" name="image" accept="image/*" required />
         <button type="submit">Add Product</button>
       </form>
     </div>
 
-    <div id="manageCategories" style="display:none;">
+    <div id="manageCategories" style="display: none;">
       <h2>Manage Categories (Admin)</h2>
-      <p>(Placeholder UI - backend required)</p>
-      <input type="text" id="newCategory" placeholder="New Category">
-      <button onclick="alert('Add category endpoint not implemented')">Add Category</button>
+      <input type="text" id="newCategory" placeholder="New Category" />
+      <button onclick="addCategory()">Add Category</button>
+      <div id="categoryList"></div>
     </div>
   </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
   <script src="/static/app.js"></script>
   <script>
-  function showToast(message, duration = 3000) {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.classList.add("show");
-    setTimeout(() => {
-      toast.classList.remove("show");
-    }, duration);
-  }
-
-  function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    showToast("Logged out");
-    location.reload();
-  }
-
-  window.addEventListener("DOMContentLoaded", () => {
-    const role = localStorage.getItem("role");
-    const token = localStorage.getItem("token");
-    const loginStatus = document.getElementById("loginStatus");
-
-    if (token && role) {
-      loginStatus.textContent = `Logged in as ${role}`;
-      loginStatus.className = role; // apply 'admin' or 'user' class
-      document.getElementById("logoutBtn").style.display = "inline-block";
-      document.getElementById("loginBtn").style.display = "none";
-      document.getElementById("registerBtn").style.display = "none";
+    function logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      showToast("Logged out");
+      location.reload();
     }
-  });
- </script>
 
+    window.addEventListener("DOMContentLoaded", () => {
+      const role = localStorage.getItem("role");
+      const token = localStorage.getItem("token");
+
+      if (token && role) {
+        document.getElementById("loginStatus").textContent = `Logged in as ${role}`;
+        document.getElementById("loginBtn").style.display = "none";
+        document.getElementById("registerBtn").style.display = "none";
+        document.getElementById("logoutBtn").style.display = "inline-block";
+
+        if (role === "admin") {
+          document.getElementById("addProductSection").style.display = "block";
+          document.getElementById("manageCategories").style.display = "block";
+          fetchAndDisplayCategories();
+        }
+      }
+    });
+  </script>
 </body>
 </html>

@@ -15,7 +15,17 @@
     </form>
     <p>Don't have an account? <a href="/register">Register here</a></p>
   </main>
+
+  <div class="toast" id="toast">Toast</div>
+
   <script>
+    function showToast(msg, time = 3000) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), time);
+    }
+
     document.getElementById("loginForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const form = e.target;
@@ -32,10 +42,10 @@
       if (res.ok && data.access_token) {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("role", data.role);
-        alert("Login successful");
-        window.location.href = "/";
+        showToast("Login successful");
+        setTimeout(() => window.location.href = "/", 1000);
       } else {
-        alert(data.message || "Login failed");
+        showToast(data.message || "Login failed");
       }
     });
   </script>
