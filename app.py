@@ -66,11 +66,11 @@ TOKENS = {}
 def home():
     return render_template("index.html")
 
-@app.route('/login')
+@app.route('/api/login', methods=["POST"])
 def login_page():
     return render_template("login.html")
 
-@app.route('/register')
+@app.route("/api/register", methods=["POST"])
 def register_page():
     return render_template("register.html")
 
