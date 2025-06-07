@@ -32,15 +32,19 @@ def create_tables():
         )
     ''')
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS products (
-            id SERIAL PRIMARY KEY,
-            name TEXT,
-            description TEXT,
-            price NUMERIC,
-            category TEXT,
-            image_url TEXT
-        )
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE,
+        password TEXT,
+        email TEXT,
+        phone TEXT,
+        full_name TEXT,
+        age INTEGER,
+        gender TEXT,
+        role TEXT
+    )
     ''')
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS categories (
             id SERIAL PRIMARY KEY,
@@ -67,18 +71,32 @@ def register_page():
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
+    required = ['username', 'password', 'email', 'phone', 'full_name', 'age', 'gender']
+    if not all(data.get(f) for f in required):
+        return jsonify({"message": "Missing required fields"}), 400
+
     username = data['username']
     password = data['password']
+    email = data['email']
+    phone = data['phone']
+    full_name = data['full_name']
+    age = int(data['age'])
+    gender = data['gender']
     role = 'admin' if username == 'admin' else 'user'
+
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO users (username, password, role) VALUES (%s, %s, %s)", (username, password, role))
+        cursor.execute("""
+            INSERT INTO users (username, password, email, phone, full_name, age, gender, role)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (username, password, email, phone, full_name, age, gender, role))
         conn.commit()
     except:
         return jsonify({"message": "Username already exists"}), 400
     conn.close()
     return jsonify({"message": "Registered", "role": role})
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
