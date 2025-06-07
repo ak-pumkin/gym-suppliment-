@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - Gym Store</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <title>Login - Gym Supplements</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <main class="form-container">
@@ -16,6 +16,7 @@
     <p>Don't have an account? <a href="/register">Register here</a></p>
   </main>
 
+  <!-- Toast -->
   <div class="toast" id="toast">Toast</div>
 
   <script>
