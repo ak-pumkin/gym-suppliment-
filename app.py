@@ -24,11 +24,17 @@ def create_tables():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            username TEXT UNIQUE,
-            password TEXT,
-            role TEXT
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE,
+        password TEXT,
+        email TEXT,
+        phone TEXT,
+        full_name TEXT,
+        age INTEGER,
+        gender TEXT,
+        role TEXT
+
         )
     ''')
     cursor.execute('''
@@ -96,6 +102,7 @@ def register():
         return jsonify({"message": "Username already exists"}), 400
     conn.close()
     return jsonify({"message": "Registered", "role": role})
+
 
 
 @app.route('/api/login', methods=['POST'])
